@@ -5,7 +5,7 @@ safe (as the pointer might be stale), therefore it is not part of core
 Lua api.
 
 This header file should be included after Lua headers - mainly because
-it overrideslua_newuserdata() with macro, all hell would break loose
+it overrides lua_newuserdata() with macro, all hell would break loose
 otherwise.
 
 After that, you can push userdatadata by pointer. In case the userdata
