@@ -37,10 +37,7 @@ static void lua_pushuserdata_portable(lua_State *L, void *p)
 static void *lua_newuserdata_wrapper(lua_State *L, size_t sz)
 {
   void *p = lua_newuserdata(L, sz);
-  luaL_getmetatable(L, PUDATA_RIDX);
-  if (lua_isnil(L, -1)) { /* Create if missing. */
-    lua_pop(L, 1);
-    luaL_newmetatable(L, PUDATA_RIDX);
+  if (luaL_newmetatable(L, PUDATA_RIDX)) { /* Create if missing. */
     lua_pushvalue(L, -1);
     lua_setmetatable(L, -2); /* Point to self. */
     lua_pushliteral(L, "v");
