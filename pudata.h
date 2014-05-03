@@ -33,10 +33,9 @@ static void lua_pushuserdata_portable(lua_State *L, void *p)
   lua_replace(L, -2);
 }
 
-/* For this to work; we have to wrap lua_newuserdata. */
-static void *lua_newuserdata_wrapper(lua_State *L, size_t sz)
+/* Associate userdata at top of stack with p. */
+static void lua_pushuserdata_assoc(lua_State *L, void *p)
 {
-  void *p = lua_newuserdata(L, sz);
   luaL_getmetatable(L, PUDATA_RIDX);
   if (lua_isnil(L, -1)) { /* Create if missing. */
     lua_pop(L, 1);
@@ -50,10 +49,24 @@ static void *lua_newuserdata_wrapper(lua_State *L, size_t sz)
   lua_pushvalue(L, -3); /* Value. */
   lua_rawset(L, -3); /* Associate. */
   lua_pop(L, 1); /* Pop metatable. */
+}
+
+/* For this to work; we have to wrap lua_newuserdata. */
+static void *lua_newuserdata_wrapper(lua_State *L, size_t sz)
+{
+  void *p = lua_newuserdata(L, sz);
+  lua_pushuserdata_assoc(L, p);
   return p;
 }
 
 #define lua_pushuserdata(L, p) lua_pushuserdata_portable(L, p)
 #define lua_newuserdata(L, sz) lua_newuserdata_wrapper(L, sz)
+
+/* When userdata are resurrected in finalizer, the weak value
+ * in PUDATA_RIDX is already gone. Use this to explicitly
+ * resurrect. */
+#define lua_pushuserdata_resurrect(L, idx) { \
+  lua_pushvalue(L, idx); \
+  lua_pushuserdata_assoc(L, lua_touserdata(L, idx)); }
 #endif
 
