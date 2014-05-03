@@ -56,6 +56,12 @@ static void *lua_newuserdata_wrapper(lua_State *L, size_t sz)
   return p;
 }
 
+/* Direct access to nud. */
+static void *lua_newuserdata_old(lua_State *L, size_t sz)
+{
+  return lua_newuserdata(L, sz);
+}
+
 #define lua_pushuserdata(L, p) lua_pushuserdata_portable(L, p)
 #define lua_newuserdata(L, sz) lua_newuserdata_wrapper(L, sz)
 
