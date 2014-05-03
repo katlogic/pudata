@@ -36,10 +36,8 @@ static void lua_pushuserdata_portable(lua_State *L, void *p)
 /* Associate userdata at top of stack with p. */
 static void lua_pushuserdata_assoc(lua_State *L, void *p)
 {
-  luaL_getmetatable(L, PUDATA_RIDX);
-  if (lua_isnil(L, -1)) { /* Create if missing. */
-    lua_pop(L, 1);
-    luaL_newmetatable(L, PUDATA_RIDX);
+  void *p = lua_newuserdata(L, sz);
+  if (luaL_newmetatable(L, PUDATA_RIDX)) { /* Create if missing. */
     lua_pushvalue(L, -1);
     lua_setmetatable(L, -2); /* Point to self. */
     lua_pushliteral(L, "v");
